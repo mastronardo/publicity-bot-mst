@@ -1,0 +1,6 @@
+MAILPASS=ENVPASS
+MAIL=ENVMAIL
+PORT=ENVPORT
+HOST=ENVHOST
+
+*/1 * * * * root /bin/bash -c /publicity-bot/publicity-bot/start_bot.sh
