@@ -1,6 +1,8 @@
+#il cron necessita le specifiche variabili d'ambinete all'interno del cronjob stesso
 MAILPASS=ENVPASS
 MAIL=ENVMAIL
 PORT=ENVPORT
 HOST=ENVHOST
 
-*/1 * * * * root /bin/bash -c /publicity-bot/publicity-bot/start_bot.sh
+# col cron eseguo ogni minuto, tramite i permessi di root, il bot
+ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c /publicity-bot/publicity-bot/start_bot.sh

@@ -106,6 +106,8 @@ def read_email_to(email_to_file):
 def read_email_cc(email_cc_file):
     email_cc = []
     if email_cc_file:
+        # tramite la funzione join converto il filecsv letto in stringa,
+        # e successivamente con split lo rendo una lista di destinatari
         email_cc += ','.join(pd.read_csv(email_cc_file)['cc']).split(',')
     return email_cc
 

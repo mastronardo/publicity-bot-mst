@@ -61,6 +61,8 @@ class EmailAPI:
             # client.set_debuglevel(verbose)
             client.login(self.__email_from, self.__password)
             message = self.__create_message(self.__email_from, self.__emails_to, self.__emails_cc)
+
+            # nel total_to avrò la lista di tutti i destinatari to e cc a cui sarà inviata la mail
             total_to=[self.__emails_to]+self.__emails_cc.split(',')
             logging.info('sending email to %s' % (", ".join(total_to)))
             for to in total_to:
