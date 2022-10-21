@@ -13,7 +13,7 @@ Basandomi su quanto è stato condiviso ho adattato il tutto per essere "containe
 
 
 <p align="center">
-  ![emails-to-sample](https://user-images.githubusercontent.com/95317308/197151454-294141ec-8d77-4ea9-88ab-1781b322e350.png)
+  <img scr=![emails-to-sample](https://user-images.githubusercontent.com/95317308/197151454-294141ec-8d77-4ea9-88ab-1781b322e350.png)>
   <br>
   <em>Esempio di mail to</em>
   <br> <br>
