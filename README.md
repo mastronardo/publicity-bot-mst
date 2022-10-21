@@ -17,11 +17,12 @@ Basandomi su quanto è stato condiviso ho adattato il tutto per essere "containe
   <br>
   <em>Esempio di mail to</em>
   <br> <br>
-  <img src="docs/emails-cc-sample.png">
+  <img src="docs/emails-cc-sample.PNG">
   <br>
   <em>Esempio di mail cc</em>
   <br> <br>
   <img src="docs/emails-body-sample.png">
+  <br>
   <em>Esempio del corpo della mail</em>
 </p>
 
