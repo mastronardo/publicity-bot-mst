@@ -2,14 +2,16 @@
 
 A causa dell'aumento della complessità di gestione di specifici problemi, workshop e conferenze, dei tool automatici ci vengono in soccorso. Questo progetto mira a inviare mail tramite Google con un semplice programma a riga di comando.
 
-# how
+# How to build it
 Questa applicazione è nata a partire da ciò che è stato pubblicato dal Professore Carnevale all'interno del suo personale repository: lcarnevale/publicity-bot.
-Basandomi su quanto è stato condiviso ho adattato il tutto per essere "container-izzabile"
+Basandomi su quanto è stato condiviso ho adattato il tutto per essere distribuibile tramite container.
 
 
 
 
-# Come usarlo
+
+
+# How to use it
 
 
 <p align="center">
