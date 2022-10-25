@@ -25,7 +25,7 @@ Ognuno di questi file devono essere salvati in file indipendeti come segue.
   <em>Esempio del corpo della mail</em>
 </p>
 
-## Cron
+### Cron
 Per mandare mail seguendo una routine utilizziamo il demone di pianificazione dei lavori basato sul tempo, <b>Cron</b>. Cron viene eseguito in background e le operazioni pianificate, denominate "processi cron", vengono eseguite automaticamente.
 I Cron job vengono registrati e gestiti in un file noto come crontab. Ciascun profilo utente sul sistema può avere il proprio crontab in cui programmare i lavori, che è archiviato in /var/spool/cron/crontabs/.
 
@@ -55,7 +55,7 @@ ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c <PATH/OF/start_bot.sh>
 ```
 il cron necessita le specifiche variabili d'ambinete all'interno del cronjob stesso. In questa prova ho pianificato il job per eseguire ogni minuto il bot, configurando la pianificazione tramite variabili d'ambinete che vengono configurante dentro il docker-compose.yml e sostituite grazie all'entrypoint.sh.
 
-## Script
+### Script
 Per rendere il tutto più automatico possibile sono stati pensati due script sh:
 - il primo, chiamato start_bot, esegue il bot con i seguenti parametri
 ```bash
@@ -70,11 +70,13 @@ Per rendere il tutto più automatico possibile sono stati pensati due script sh:
 ```
 
 - il secondo, chiamato entrypoint, sarà il primo comando eseguito dal container. In ordine:
-- avvio del demone di cron
-- col comando sed sostisuisco al cronjob i valori delle variabili d'ambiente
-- copio il cronjob nella cartella di default di cron
-- l'if è pensato per controllare se esiste il file di log; se non esiste viene creato
-- col comando tail +1f aggiorno la stampa del log in tempo reale
+<ol>
+	<li>avvio del demone di cron</li>
+	<li>col comando sed sostisuisco al cronjob i valori delle variabili d'ambiente</li>
+	<li>copio il cronjob nella cartella di default di cron</li>
+	<li>l'if è pensato per controllare se esiste il file di log; se non esiste viene creato</li>
+	<li>col comando tail +1f aggiorno la stampa del log in tempo reale</li>
+</ol>
 
 ```bash
 service cron start
@@ -98,7 +100,7 @@ fi
 tail +1f /log/mailcli.log
 ```
 
-## Docker
+### Docker
 Docker è
 
 
