@@ -34,14 +34,14 @@ Per pianificare un job si deve aprire il crontab e aggiungere un'attività scrit
 Il comando può essere praticamente qualsiasi comando che eseguiresti normalmente sulla riga di comando. La componente di pianificazione della sintassi è suddivisa in 5 diversi campi, che vengono scritti nel seguente ordine:
 
 |     Field        | Allowed Values  |
-|:-----------------|:---------------:|
+|:----------------:|:---------------:|
 | Minute           | 0-59            |
 | Hour             | 0-23            |
 | Day of the month | 1-31            |
 | Month            | 1-12 or JAN-DEC |
 | Day of the week  | 0-6 or SUN-SAT  |
 
-Nelle espressioni cron, un asterisco è una variabile che rappresenta tutti i valori possibili. Pertanto, un'attività pianificata con * * * * * ... verrà eseguita ogni minuto di ogni ora di ogni giorno di ogni mese.
+Nelle espressioni cron, un asterisco è una variabile che rappresenta tutti i valori possibili. Pertanto, un'attività pianificata con * * * * * oppure * /1 * * * * ... verrà eseguita ogni minuto di ogni ora di ogni giorno di ogni mese.
 
 
 Il Cronjob pianificato per questo progetto è il seguente:
@@ -105,15 +105,8 @@ Docker è
 
 
 # How to use it
-Dal punto di vista dell'utilizzatore è necessario, dapprima, registrarsi a Docker Hub, abilitare l'autentificazione a 2 fattori e infine generare un Access Token per poter effettuare il login da CLI.
-Successivamente basterà effettuare l'operazione di pull per ottenere l'immagine dalla repository ed esegurila tramite i comandi riportato sotto.
 
 
 ```bash
-sudo docker login --username <yourusername>
-
-...
-
-sudo docker pull mastronardo/publicity-bot-mst
-sudo docker exec -it publicity-bot-mst-publicity-bot-mst-1 bash
+sudo docker compose up
 ```

@@ -65,7 +65,8 @@ class EmailAPI:
             # nel total_to avrò la lista di tutti i destinatari to e cc a cui sarà inviata la mail
             total_to=[self.__emails_to]+self.__emails_cc.split(',')
             logging.info('sending email to %s' % (", ".join(total_to)))
-            for to in total_to:
+            # tramite una list comprehension filtro le stringhe vuote
+            for to in [x for x in total_to if x]:
                 self.__send_message(client, self.__email_from, to, message)
 
     def __create_message(self, email_from, email_to, email_cc):
