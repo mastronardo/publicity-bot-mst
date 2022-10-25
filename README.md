@@ -28,9 +28,25 @@ Ognuno di questi file devono essere salvati in file indipendeti come segue.
 Per mandare mail seguendo una routine utilizziamo il demone di pianificazione dei lavori basato sul tempo, <b>Cron</b>. Cron viene eseguito in background e le operazioni pianificate, denominate "processi cron", vengono eseguite automaticamente.
 I Cron job vengono registrati e gestiti in un file noto come crontab. Ciascun profilo utente sul sistema può avere il proprio crontab in cui programmare i lavori, che è archiviato in /var/spool/cron/crontabs/.
 
-Per pianificare un job, apri crontab per la modifica e aggiungi un'attività scritta sotto forma di un'espressione cron. La sintassi per le espressioni cron può essere suddivisa in due elementi: la pianificazione e il comando da eseguire.
+Per pianificare un job si deve aprire il crontab e aggiungere un'attività scritta sotto forma di un'espressione cron. La sintassi per le espressioni cron può essere suddivisa in due elementi: la pianificazione e il comando da eseguire.
 
 Il comando può essere praticamente qualsiasi comando che eseguiresti normalmente sulla riga di comando. La componente di pianificazione della sintassi è suddivisa in 5 diversi campi, che vengono scritti nel seguente ordine:
+
+<p align="center">
+|     Field        | Allowed Values  |
+|:-----------------|:---------------:|
+| Minute           | 0-59            |
+| Hour             | 0-23            |
+| Day of the month | 1-31            |
+| Month            | 1-12 or JAN-DEC |
+| Day of the week  | 0-6 or SUN-SAT  |
+</p>
+
+Nelle espressioni cron, un asterisco è una variabile che rappresenta tutti i valori possibili. Pertanto, un'attività pianificata con * * * * * ... verrà eseguita ogni minuto di ogni ora di ogni giorno di ogni mese.
+
+
+
+
 
 
 # How to use it
