@@ -32,7 +32,7 @@ Per pianificare un job si deve aprire il crontab e aggiungere un'attività scrit
 
 Il comando può essere praticamente qualsiasi comando che eseguiresti normalmente sulla riga di comando. La componente di pianificazione della sintassi è suddivisa in 5 diversi campi, che vengono scritti nel seguente ordine:
 
-<p align="center">
+<div align="center">
 |     Field        | Allowed Values  |
 |:-----------------|:---------------:|
 | Minute           | 0-59            |
@@ -40,7 +40,7 @@ Il comando può essere praticamente qualsiasi comando che eseguiresti normalment
 | Day of the month | 1-31            |
 | Month            | 1-12 or JAN-DEC |
 | Day of the week  | 0-6 or SUN-SAT  |
-</p>
+</div>
 
 Nelle espressioni cron, un asterisco è una variabile che rappresenta tutti i valori possibili. Pertanto, un'attività pianificata con * * * * * ... verrà eseguita ogni minuto di ogni ora di ogni giorno di ogni mese.
 
