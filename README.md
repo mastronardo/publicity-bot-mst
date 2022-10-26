@@ -9,7 +9,7 @@ Basandomi su quanto è stato condiviso ho adattato il tutto per essere distribui
 Il progetto si basa sull'utilizzo del servizio SMTP di Gmail per inviare mail, tramite la porta 465. Per permetterne l'utilizzo da CLI è necessario abilitare l'autentificazione a 2 fattori e generare una Password per le App per effettuare il login, in quanto dal 30 maggio 2022 Google non supporterà più l'uso di app di terze parti o dispositivi che chiedono di accedere all'Account Google utilizzando solo il nome utente e la password.
 
 L'applicazione richiede la lista dei destinatari, il corpo e l'oggetto della mail. La lista dei destinatari in copia è, invece, opzionale.
-Ognuno di questi file devono essere salvati in file indipendeti come segue.
+Ognuno di questi file devono essere salvati in file indipendeti e salvati all'interno della cartella files.
 
 <p align="center">
   <img src="docs/emails-to-sample.png">
@@ -101,11 +101,69 @@ tail +1f /log/mailcli.log
 ```
 
 ### Docker
-Docker è
+Docker è una piattaforma software che permette di creare, testare e distribuire applicazioni con la massima rapidità. Docker raccoglie il software in unità standardizzate chiamate container che offrono tutto il necessario per la loro corretta esecuzione, incluse librerie, strumenti di sistema, codice e runtime. Con Docker, è possibile distribuire e ricalibrare le risorse per un'applicazione in qualsiasi ambiente, tenendo sempre sotto controllo il codice eseguito.
+
+L’esecuzione di Docker offre agli sviluppatori un modo altamente affidabile e poco costoso per creare, spedire ed eseguire applicazioni distribuite su qualsiasi scala.
+
+Docker fornisce una modalità standard per eseguire il tuo codice. Si tratta di un sistema operativo per container. Così come la macchina virtuale virtualizza i server hardware (ovvero elimina la necessità di gestirli direttamente), i container virtualizzano il sistema operativo di un server. Docker è installato su ogni server e fornisce semplici comandi con cui creare, avviare o interrompere i container.
+
+#### Dockerfile
+Docker può creare immagini automaticamente leggendo le istruzioni da un Dockerfile. Un Dockerfile è un documento di testo che contiene tutti i comandi che un utente può chiamare sulla riga di comando per assemblare un'immagine. Cosa si intende per immagine Docker?
+Un'immagine Docker è un modello in sola lettura che definisce il container. L'immagine contiene il codice che verrà eseguito, incluse le definizioni per librerie e dipendenze necessarie. Un container Docker è un'immagine Docker in esecuzione.
+
+``` bash
+FROM python:3.10.8-slim-buster
+
+RUN apt update && apt install cron nano -y && apt upgrade -y
+
+RUN mkdir /publicity-bot /log
+
+COPY . /publicity-bot/
+WORKDIR /publicity-bot
+
+RUN pip3 install --upgrade pip && pip3 install -r /publicity-bot/requirements.txt
+
+ENTRYPOINT ["sh","-c","/publicity-bot/scripts/entrypoint.sh"]
+```
+- Scarico un immagine di python dal Docker Hub, così da poter eseguire i file .py all'interno del container
+- Installo cron e nano all'interno per container
+- Creo la directory del bot e del logging
+- Copio i file nel container dal .dockerignore e rendo /publicity-bot la directory di lavoro
+- Il primo comando eseguito dal container sarà lo script entrypoint
+
+#### Docker Compose
+Il file Compose è un file YAML che definisce servizi, reti e volumi per un'applicazione Docker. Docker Compose è uno strumento sviluppato per aiutare a definire e condividere applicazioni multi-container. Il grande vantaggio dell'utilizzo di Compose è che puoi definire lo stack dell'applicazione in un file, mantenerlo nella radice del repository del tuo progetto e consentire facilmente a qualcun altro di contribuire al tuo progetto.
+
+``` bash
+version: "3.9"
+services:
+  publicity-bot-mst:
+    # immagine presa dal Docker Hub
+    image: mastronardo/publicity-bot-mst
+    # passo al container i file .csv tramite binding
+    # creo un volume per rendere persistente il file di log
+    volumes:
+      - ./files/:/publicity-bot/publicity-bot/files/
+      - publicity-bot-logging:/log/
+    # creo le variabili d'ambiente del container
+    environment:
+      - MAIL=youremail@gmail.com
+      - MAILPASS=password
+      - PORT=465
+      - HOST=smtp.gmail.com
+      - MIN=\*\/1
+      - HOUR=\*
+      - MDAY=\*
+      - MONTH=\*
+      - WDAY=\*
+volumes:
+  publicity-bot-logging:
+```
+Per rendere il più flessibile possibile il bot ho gestito l'indirizzo mail, la sua password, il servizio per l'inoltro di mail e la pianificazione di cron, gestendole come variabili d'ambiente per adattarsi facilmente alle necessità di un nuovo utente che vuole utilizzare il bot.
 
 
 # How to use it
-
+Una volta creata la cartella files con i file necessari e modificato il docker compose in base alle proprie preferenze, basterà eseguire il comando riportato sotto per far partire il bot:
 
 ```bash
 sudo docker compose up
