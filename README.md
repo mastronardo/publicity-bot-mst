@@ -1,15 +1,18 @@
 # Publicity bot mst
 
-A causa dell'aumento della complessità di gestione di specifici problemi, workshop e conferenze, dei tool automatici ci vengono in soccorso. Questo progetto mira a inviare mail, con una specifica routine, tramite Google con un semplice programma a riga di comando.
+A causa dell'aumento della complessità di gestione di specifici problemi, workshop e conferenze, dei tool automatici ci vengono in soccorso. Questo progetto mira a inviare mail, con una specifica routine, tramite Gmail con un semplice programma a riga di comando.
 
-# How to build it
-Questa applicazione è nata a partire da ciò che è stato pubblicato dal Professore Carnevale all'interno del suo personale repository: lcarnevale/publicity-bot.
+# Code
+Questa applicazione è nata a partire da ciò che è stato pubblicato dal Professore Carnevale all'interno del suo personale repository: <a href="https://github.com/lcarnevale/publicity-bot">lcarnevale/publicity-bot</a>.
 Basandomi su quanto è stato condiviso ho adattato il tutto per essere distribuibile tramite container.
 
+
+
+# How to build it
 Il progetto si basa sull'utilizzo del servizio SMTP di Gmail per inviare mail, tramite la porta 465. Per permetterne l'utilizzo da CLI è necessario abilitare l'autentificazione a 2 fattori e generare una Password per le App per effettuare il login, in quanto dal 30 maggio 2022 Google non supporterà più l'uso di app di terze parti o dispositivi che chiedono di accedere all'Account Google utilizzando solo il nome utente e la password.
 
 L'applicazione richiede la lista dei destinatari, il corpo e l'oggetto della mail. La lista dei destinatari in copia è, invece, opzionale.
-Ognuno di questi file devono essere salvati in file indipendeti e salvati all'interno della cartella files.
+Questi requisiti deve essere salvato su file indipendenti (denominati rispettivamente: mailto.csv, cc.csv, subject.csv, body.csv) all'interno di una directory dedicata. I file devono avere la seguente costruzione:
 
 <p align="center">
   <img src="docs/emails-to-sample.png">
@@ -20,18 +23,21 @@ Ognuno di questi file devono essere salvati in file indipendeti e salvati all'in
   <br>
   <em>Esempio di mail cc</em>
   <br> <br>
+  <img src="docs/emails-subject-sample.png">
+  <br>
+  <em>Esempio dell'oggetto della mail</em>
+  <br> <br>
   <img src="docs/emails-body-sample.png">
   <br>
   <em>Esempio del corpo della mail</em>
 </p>
 
 ### Cron
-Per mandare mail seguendo una routine utilizziamo il demone di pianificazione dei lavori basato sul tempo, <b>Cron</b>. Cron viene eseguito in background e le operazioni pianificate, denominate "processi cron", vengono eseguite automaticamente.
-I Cron job vengono registrati e gestiti in un file noto come crontab. Ciascun profilo utente sul sistema può avere il proprio crontab in cui programmare i lavori, che è archiviato in /var/spool/cron/crontabs/.
+Per mandare mail seguendo una routine utilizziamo il demone di pianificazione dei lavori basato sul tempo, <b>Cron</b>. Cron viene eseguito in background e le operazioni pianificate, denominate "cron job", vengono eseguite automaticamente.
+I Cron job vengono registrati e gestiti tramite dei file presenti nella directory /etc/cron.d/ .
+La sintassi per le espressioni cron può essere suddivisa in due elementi: la pianificazione e il comando da eseguire.
 
-Per pianificare un job si deve aprire il crontab e aggiungere un'attività scritta sotto forma di un'espressione cron. La sintassi per le espressioni cron può essere suddivisa in due elementi: la pianificazione e il comando da eseguire.
-
-Il comando può essere praticamente qualsiasi comando che eseguiresti normalmente sulla riga di comando. La componente di pianificazione della sintassi è suddivisa in 5 diversi campi, che vengono scritti nel seguente ordine:
+La componente di pianificazione della sintassi è suddivisa in 5 diversi campi, che vengono scritti nel seguente ordine:
 
 |     Field        | Allowed Values  |
 |:----------------:|:---------------:|
@@ -41,7 +47,7 @@ Il comando può essere praticamente qualsiasi comando che eseguiresti normalment
 | Month            | 1-12 or JAN-DEC |
 | Day of the week  | 0-6 or SUN-SAT  |
 
-Nelle espressioni cron, un asterisco è una variabile che rappresenta tutti i valori possibili. Pertanto, un'attività pianificata con * * * * * oppure * /1 * * * * ... verrà eseguita ogni minuto di ogni ora di ogni giorno di ogni mese.
+Nelle espressioni cron, un asterisco è una variabile che rappresenta tutti i valori possibili. Pertanto, un'attività pianificata con * * * * * oppure */1 * * * * ... verrà eseguita ogni minuto di ogni ora di ogni giorno di ogni mese.
 
 
 Il Cronjob pianificato per questo progetto è il seguente:
@@ -53,23 +59,23 @@ HOST=ENVHOST
 
 ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c <PATH/OF/start_bot.sh>
 ```
-il cron necessita le specifiche variabili d'ambinete all'interno del cronjob stesso. In questa prova ho pianificato il job per eseguire ogni minuto il bot, configurando la pianificazione tramite variabili d'ambinete che vengono configurante dentro il docker-compose.yml e sostituite grazie all'entrypoint.sh.
+Il cron necessita le specifiche variabili d'ambiente all'interno del cronjob stesso. In questa prova ho pianificato il job per eseguire ogni minuto il bot, configurando la pianificazione tramite variabili d'ambinete che vengono configurante dentro il docker-compose.yml e sostituite grazie all'entrypoint.sh.
 
 ### Script
 Per rendere il tutto più automatico possibile sono stati pensati due script sh:
-- il primo, chiamato start_bot, esegue il bot con i seguenti parametri
+- il primo, chiamato start_bot.sh, esegue il bot con i seguenti parametri
 ```bash
-<PATH/OF/python3> <PATH/OF/main.py> \
+python3 /publicity-bot/publicity-bot/main.py \
     --host $HOST \
     --port $PORT \
     --from $MAIL \
-    --to <PATH/OF/mailto.csv> \
-    --cc <PATH/OF/cc.csv> \
-    --subject <PATH/OF/subject.csv> \
-    --body <PATH/OF/body.csv>
+    --to /publicity-bot/publicity-bot/files/mailto.csv \
+    --cc /publicity-bot/publicity-bot/files/cc.csv \
+    --subject /publicity-bot/publicity-bot/files/subject.csv \
+    --body /publicity-bot/publicity-bot/files/body.csv
 ```
 
-- il secondo, chiamato entrypoint, sarà il primo comando eseguito dal container. In ordine:
+- il secondo, chiamato entrypoint.sh, sarà il primo comando eseguito dal container. In ordine:
 <ol>
 	<li>avvio del demone di cron</li>
 	<li>col comando sed sostisuisco al cronjob i valori delle variabili d'ambiente</li>
@@ -81,17 +87,17 @@ Per rendere il tutto più automatico possibile sono stati pensati due script sh:
 ```bash
 service cron start
 
-sed -i s/ENVMAIL/$MAIL/ <PATH/OF/cronjob>
-sed -i s/ENVPASS/$MAILPASS/ <PATH/OF/cronjob>
-sed -i s/ENVHOST/$HOST/ <PATH/OF/cronjob>
-sed -i s/ENVPORT/$PORT/ <PATH/OF/cronjob>
-sed -i s/ENVMIN/$MIN/ <PATH/OF/cronjob>
-sed -i s/ENVHOUR/$HOUR/ <PATH/OF/cronjob>
-sed -i s/ENVMDAY/$MDAY/ <PATH/OF/cronjob>
-sed -i s/ENVMONTH/$MONTH/ <PATH/OF/cronjob>
-sed -i s/ENVWDAY/$WDAY/ <PATH/OF/cronjob>
+sed -i s/ENVMAIL/$MAIL/ scripts/cronjob
+sed -i s/ENVPASS/$MAILPASS/ scripts/cronjob
+sed -i s/ENVHOST/$HOST/ scripts/cronjob
+sed -i s/ENVPORT/$PORT/ scripts/cronjob
+sed -i s/ENVMIN/$MIN/ scripts/cronjob
+sed -i s/ENVHOUR/$HOUR/ scripts/cronjob
+sed -i s/ENVMDAY/$MDAY/ scripts/cronjob
+sed -i s/ENVMONTH/$MONTH/ scripts/cronjob
+sed -i s/ENVWDAY/$WDAY/ scripts/cronjob
 
-cp <PATH/OF/cronjob> /etc/cron.d/
+cp scripts/cronjob /etc/cron.d/
 
 if [ ! -f "/log/mailcli.log" ]; then
         touch /log/mailcli.log
@@ -108,30 +114,12 @@ L’esecuzione di Docker offre agli sviluppatori un modo altamente affidabile e 
 Docker fornisce una modalità standard per eseguire il tuo codice. Si tratta di un sistema operativo per container. Così come la macchina virtuale virtualizza i server hardware (ovvero elimina la necessità di gestirli direttamente), i container virtualizzano il sistema operativo di un server. Docker è installato su ogni server e fornisce semplici comandi con cui creare, avviare o interrompere i container.
 
 #### Dockerfile
-Docker può creare immagini automaticamente leggendo le istruzioni da un Dockerfile. Un Dockerfile è un documento di testo che contiene tutti i comandi che un utente può chiamare sulla riga di comando per assemblare un'immagine. Un'immagine Docker è un modello in sola lettura che definisce il container. L'immagine contiene il codice che verrà eseguito, incluse le definizioni per librerie e dipendenze necessarie. Un container Docker è un'immagine Docker in esecuzione.
-
-``` bash
-FROM python:3.10.8-slim-buster
-
-RUN apt update && apt install cron nano -y && apt upgrade -y
-
-RUN mkdir /publicity-bot /log
-
-COPY . /publicity-bot/
-WORKDIR /publicity-bot
-
-RUN pip3 install --upgrade pip && pip3 install -r /publicity-bot/requirements.txt
-
-ENTRYPOINT ["sh","-c","/publicity-bot/scripts/entrypoint.sh"]
-```
-- Scarico un immagine di python dal Docker Hub, così da poter eseguire i file .py all'interno del container
-- Installo cron e nano all'interno per container
-- Creo la directory del bot e del logging
-- Copio i file nel container dal .dockerignore e rendo /publicity-bot la directory di lavoro
-- Il primo comando eseguito dal container sarà lo script entrypoint
+Docker può creare immagini leggendo le istruzioni da un Dockerfile. Un Dockerfile è un documento di testo che contiene le istruzioni che Docker deve eseguire per impostare il container. Un'immagine Docker è un modello in sola lettura che definisce il container. L'immagine contiene il codice che verrà eseguito, incluse le definizioni per librerie e dipendenze necessarie. Un container Docker è un'immagine Docker in esecuzione.
+Di seguito il link all'immagine nel Docker Hub:
+<a href="https://hub.docker.com/r/mastronardo/publicity-bot-mst">mastronardo/publicity-bot-mst</a>
 
 #### Docker Compose
-Il file Compose è un file YAML che definisce servizi, reti e volumi per un'applicazione Docker. Docker Compose è uno strumento sviluppato per aiutare a definire e condividere applicazioni multi-container. Il grande vantaggio dell'utilizzo di Compose è che puoi definire lo stack dell'applicazione in un file, mantenerlo nella radice del repository del tuo progetto e consentire facilmente a qualcun altro di contribuire al tuo progetto.
+Il file Compose è un file YAML che definisce servizi, reti e volumi per un'applicazione Docker. Docker Compose è uno strumento sviluppato per aiutare a definire e condividere applicazioni multi-container. Il grande vantaggio dell'utilizzo di Compose è che puoi definire lo stack dell'applicazione e settare l'ambiente d'esecuzione in un solo file.
 
 ``` bash
 version: "3.9"
@@ -142,12 +130,12 @@ services:
     # passo al container i file .csv tramite binding
     # creo un volume per rendere persistente il file di log
     volumes:
-      - ./files/:/publicity-bot/publicity-bot/files/
-      - publicity-bot-logging:/log/
+      - <PATH/OF/MAIL/REQUIREMENTS/DIRECTORY>:/publicity-bot/publicity-bot/files/
+      - <VOLUME>:/log/
     # creo le variabili d'ambiente del container
     environment:
-      - MAIL=youremail@gmail.com
-      - MAILPASS=password
+      - MAIL=<youremail@gmail.com>
+      - MAILPASS=<password>
       - PORT=465
       - HOST=smtp.gmail.com
       - MIN=\*\/1
@@ -156,13 +144,13 @@ services:
       - MONTH=\*
       - WDAY=\*
 volumes:
-  publicity-bot-logging:
+  <VOLUME>:
 ```
 Per rendere il più flessibile possibile il bot ho gestito l'indirizzo mail, la sua password, il servizio per l'inoltro di mail e la pianificazione di cron, gestendole come variabili d'ambiente per adattarsi facilmente alle necessità di un nuovo utente che vuole utilizzare il bot.
 
 
 # How to use it
-Una volta creata la cartella files con i file necessari e modificato il docker compose in base alle proprie preferenze, basterà eseguire il comando riportato sotto per far partire il bot:
+Una volta creata la cartella con i file necessari e modificato il docker compose in base alle proprie preferenze, basterà eseguire il comando riportato sotto per far partire il bot:
 
 ```bash
 sudo docker compose up
