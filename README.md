@@ -6,7 +6,46 @@ A causa dell'aumento della complessità di gestione di specifici problemi, works
 Questa applicazione è nata a partire da ciò che è stato pubblicato dal Professore Carnevale all'interno del suo personale repository: <a href="https://github.com/lcarnevale/publicity-bot">lcarnevale/publicity-bot</a>.
 Basandomi su quanto è stato condiviso ho adattato il tutto per essere distribuibile tramite container.
 
+Rispetto all'originale main.py ho apportato le seguenti modifiche:
+- importo la libreria environ così da poter ottenere la password tramite variabile d'ambiente e non da CLI
 
+- è stata modificata la funzione ```read_email_cc``` così da poter ottenere la lista dei destinatari in copia
+``` python
+def read_email_cc(email_cc_file):
+    email_cc = []
+    if email_cc_file:
+        email_cc += ','.join(pd.read_csv(email_cc_file)['cc']).split(',')
+    return email_cc
+```
+
+Invece rispetto all'originale emailapi.py ho apportato le seguenti modifiche:
+- generiche modifiche alle stampe di log
+
+- Nella funzione ```__setup_logging``` ho impostato il log nel file /log/mailcli.log
+``` python
+def __setup_logging(self, verbosity=False):
+        format = "%(asctime)s %(filename)s:%(lineno)d %(levelname)s - %(message)s"
+        filename='/log/mailcli.log'
+        datefmt = "%d/%m/%Y %H:%M:%S %Z"
+        level = logging.INFO
+        if (verbosity):
+            level = logging.DEBUG
+        logging.basicConfig(filename=filename, filemode='a', format=format, level=level, datefmt=datefmt)
+```
+
+- Nella funzione ```send_all``` il messaggio viene creato una sola volta e inviato a tutti i destinatari, sia to che cc.
+``` python
+def send_all(self):
+        logging.info('------------ SENDING %s ------------' % (self.__emails_subject))
+        context = ssl.create_default_context()
+        with SMTP_SSL(self.__host, self.__port, context=context) as client:
+            client.login(self.__email_from, self.__password)
+            message = self.__create_message(self.__email_from, self.__emails_to, self.__emails_cc)
+            total_to=[self.__emails_to]+self.__emails_cc.split(',')
+            logging.info('sending email to %s' % (", ".join(total_to)))
+            for to in [x for x in total_to if x]:
+                self.__send_message(client, self.__email_from, to, message)
+```
 
 # How to build it
 Il progetto si basa sull'utilizzo del servizio SMTP di Gmail per inviare mail, tramite la porta 465. Per permetterne l'utilizzo da CLI è necessario abilitare l'autentificazione a 2 fattori e generare una Password per le App per effettuare il login, in quanto dal 30 maggio 2022 Google non supporterà più l'uso di app di terze parti o dispositivi che chiedono di accedere all'Account Google utilizzando solo il nome utente e la password.
