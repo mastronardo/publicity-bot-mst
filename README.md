@@ -108,8 +108,7 @@ L’esecuzione di Docker offre agli sviluppatori un modo altamente affidabile e 
 Docker fornisce una modalità standard per eseguire il tuo codice. Si tratta di un sistema operativo per container. Così come la macchina virtuale virtualizza i server hardware (ovvero elimina la necessità di gestirli direttamente), i container virtualizzano il sistema operativo di un server. Docker è installato su ogni server e fornisce semplici comandi con cui creare, avviare o interrompere i container.
 
 #### Dockerfile
-Docker può creare immagini automaticamente leggendo le istruzioni da un Dockerfile. Un Dockerfile è un documento di testo che contiene tutti i comandi che un utente può chiamare sulla riga di comando per assemblare un'immagine. Cosa si intende per immagine Docker?
-Un'immagine Docker è un modello in sola lettura che definisce il container. L'immagine contiene il codice che verrà eseguito, incluse le definizioni per librerie e dipendenze necessarie. Un container Docker è un'immagine Docker in esecuzione.
+Docker può creare immagini automaticamente leggendo le istruzioni da un Dockerfile. Un Dockerfile è un documento di testo che contiene tutti i comandi che un utente può chiamare sulla riga di comando per assemblare un'immagine. Un'immagine Docker è un modello in sola lettura che definisce il container. L'immagine contiene il codice che verrà eseguito, incluse le definizioni per librerie e dipendenze necessarie. Un container Docker è un'immagine Docker in esecuzione.
 
 ``` bash
 FROM python:3.10.8-slim-buster
