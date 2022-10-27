@@ -96,7 +96,7 @@ MAIL=ENVMAIL
 PORT=ENVPORT
 HOST=ENVHOST
 
-ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c <PATH/OF/start_bot.sh>
+ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c /publicity-bot/publicity-bot/start_bot.sh
 ```
 Il cron necessita le specifiche variabili d'ambiente all'interno del cronjob stesso. In questa prova ho pianificato il job per eseguire ogni minuto il bot, configurando la pianificazione tramite variabili d'ambinete che vengono configurante dentro il docker-compose.yml e sostituite grazie all'entrypoint.sh.
 
