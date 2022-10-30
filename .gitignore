@@ -1,2 +1,4 @@
 docker-compose.yml
 files/
+.config1.env
+.config2.env

@@ -96,13 +96,13 @@ MAIL=ENVMAIL
 PORT=ENVPORT
 HOST=ENVHOST
 
-ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c <PATH/OF/start_bot.sh>
+ENVMIN ENVHOUR ENVMDAY ENVMONTH ENVWDAY root /bin/bash -c /publicity-bot/publicity-bot/start_bot.sh
 ```
 Il cron necessita le specifiche variabili d'ambiente all'interno del cronjob stesso. In questa prova ho pianificato il job per eseguire ogni minuto il bot, configurando la pianificazione tramite variabili d'ambinete che vengono configurante dentro il docker-compose.yml e sostituite grazie all'entrypoint.sh.
 
 ### Script
 Per rendere il tutto più automatico possibile sono stati pensati due script sh:
-- il primo, chiamato start_bot.sh, esegue il bot con i seguenti parametri
+- il primo, chiamato ```start_bot.sh```, esegue il bot con i seguenti parametri
 ```bash
 python3 /publicity-bot/publicity-bot/main.py \
     --host $HOST \
@@ -114,7 +114,7 @@ python3 /publicity-bot/publicity-bot/main.py \
     --body /publicity-bot/publicity-bot/files/body.csv
 ```
 
-- il secondo, chiamato entrypoint.sh, sarà il primo comando eseguito dal container. In ordine:
+- il secondo, chiamato ```entrypoint.sh```, sarà il primo comando eseguito dal container. In ordine:
 <ol>
 	<li>avvio del demone di cron</li>
 	<li>col comando sed sostisuisco al cronjob i valori delle variabili d'ambiente</li>
@@ -166,31 +166,48 @@ services:
   publicity-bot-mst:
     # immagine presa dal Docker Hub
     image: mastronardo/publicity-bot-mst
+    container_name: ${COMPOSE_PROJECT_NAME}-publicity-bot-mst
     # passo al container i file .csv tramite binding
     # creo un volume per rendere persistente il file di log
     volumes:
-      - <PATH/OF/MAIL/REQUIREMENTS/DIRECTORY>:/publicity-bot/publicity-bot/files/
+      - ./${NAMEDIR}/:/publicity-bot/publicity-bot/files/
       - <VOLUME>:/log/
-    # creo le variabili d'ambiente del container
+    # passo le variabili d'ambiente tramite il file .env
     environment:
-      - MAIL=<youremail@gmail.com>
-      - MAILPASS=<password>
-      - PORT=465
-      - HOST=smtp.gmail.com
-      - MIN=\*\/1
-      - HOUR=\*
-      - MDAY=\*
-      - MONTH=\*
-      - WDAY=\*
+      MAIL: ${MAIL}
+      MAILPASS: ${MAILPASS}
+      PORT: ${PORT}
+      HOST: ${HOST}
+      MIN: ${MIN}
+      HOUR: ${HOUR}
+      MDAY: ${MDAY}
+      MONTH: ${MONTH}
+      WDAY: ${WDAY}
 volumes:
   <VOLUME>:
 ```
-Per rendere il più flessibile possibile il bot ho gestito l'indirizzo mail, la sua password, il servizio per l'inoltro di mail e la pianificazione di cron, gestendole come variabili d'ambiente per adattarsi facilmente alle necessità di un nuovo utente che vuole utilizzare il bot.
+
+La struttura del file .env è la seguente:
+``` bash
+COMPOSE_PROJECT_NAME=<examplename>
+NAMEDIR=files
+MAIL=<youremail@gmail.com>
+MAILPASS=<password>
+PORT=465
+HOST=smtp.gmail.com
+MIN=\*\/1
+HOUR=\*
+MDAY=\*
+MONTH=\*
+WDAY=\*
+```
+
+Per rendere il più flessibile possibile il bot ho gestito il nome del progetto, la directory dei requisiti, l'indirizzo mail, la sua password, il servizio per l'inoltro di mail e la pianificazione di cron, gestendole come variabili d'ambiente per adattarsi facilmente alle necessità di un nuovo utente che vuole utilizzare il bot.
 
 
 # How to use it
-Una volta creata la cartella con i file necessari e modificato il docker compose in base alle proprie preferenze, basterà eseguire il comando riportato sotto per far partire il bot:
+Una volta creata la cartella con i file necessari e modificato il docker compose e il file .env in base alle proprie preferenze, basterà eseguire il comando riportato sotto per far partire il bot:
 
 ```bash
-sudo docker compose up
+sudo docker compose --env-file <FILE.env> up
 ```
