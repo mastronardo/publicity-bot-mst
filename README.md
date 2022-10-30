@@ -188,6 +188,7 @@ volumes:
 ```
 
 La struttura del file .env è la seguente:
+Ho utilizzato la variabile d'ambiente ```COMPOSE_PROJECT_NAME``` per fare in modo di assegnare a ogni progetto un nome diverso, così da poter eseguire contemporaneamente due container.
 ``` bash
 COMPOSE_PROJECT_NAME=<examplename>
 NAMEDIR=files
